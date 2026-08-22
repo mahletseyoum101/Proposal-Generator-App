@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1d1d1f;
+
+  /* Dodo Digital proposal palette, extracted from the source template */
+  --dodo-gold: #b8912b;
+  --dodo-gold-dark: #4a3a22;
+  --dodo-ink: #241c13;
+  --dodo-body: #2e2e2e;
+  --dodo-muted: #5a5a5a;
+  --dodo-cream: #faf6ec;
+  --dodo-border: #e4d9bc;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-dodo-gold: var(--dodo-gold);
+  --color-dodo-gold-dark: var(--dodo-gold-dark);
+  --color-dodo-ink: var(--dodo-ink);
+  --color-dodo-body: var(--dodo-body);
+  --color-dodo-muted: var(--dodo-muted);
+  --color-dodo-cream: var(--dodo-cream);
+  --color-dodo-border: var(--dodo-border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+}

@@ -8,6 +8,8 @@ export type ProposalStatus =
 export interface PackageCategory {
   title: string;
   items: string[];
+  /** Share of price_total this category represents, 0-1. Weights across all categories sum to 1. */
+  price_weight: number;
 }
 
 export interface TitledPoint {
@@ -16,31 +18,24 @@ export interface TitledPoint {
 }
 
 export interface ProposalContent {
-  headline: string;
-  subheadline: string;
+  /** Short, client-specific project title shown under the business name on the cover. */
+  project_title: string;
+  /** One-line tagline under the project title, e.g. "Prepared for a stronger online presence." */
+  footer_tagline: string;
   service_tags: string[];
 
-  opportunity_intro: string;
-  pain_points: string[];
-  solution_paragraph: string;
-
-  goals: TitledPoint[];
-  services: TitledPoint[];
+  /** Exactly 4 — the client's specific problem areas. */
+  problem_areas: TitledPoint[];
+  /** Exactly 4 — the client-specific benefits of the proposed solution. */
+  solution_benefits: TitledPoint[];
 
   package_categories: PackageCategory[];
 
-  why_package_paragraph: string;
-  why_package_flow: string[];
-
-  savings_points: string[];
-  savings_benefits: string[];
-
-  process_steps: TitledPoint[];
-
-  expectation_questions: string[];
-  promise_paragraph: string;
-
   closing_message: string;
+
+  contact_email: string;
+  contact_phone: string;
+  contact_website: string;
 }
 
 export interface Proposal {
@@ -90,4 +85,23 @@ export function amountDue(proposal: Pick<Proposal, "price_total" | "deposit_perc
     return Math.round(proposal.price_total * (proposal.deposit_percent / 100) * 100) / 100;
   }
   return proposal.price_total;
+}
+
+/**
+ * Per-category dollar amounts for the investment table, normalized so weights always sum to 1
+ * (defensive against imprecise AI-suggested weights) and so the amounts always sum exactly to
+ * price_total (any rounding remainder is absorbed into the last category).
+ */
+export function categoryAmounts(priceTotal: number, categories: PackageCategory[]): number[] {
+  const totalWeight = categories.reduce((sum, c) => sum + (c.price_weight || 0), 0);
+  if (totalWeight <= 0) {
+    const even = Math.round((priceTotal / categories.length) * 100) / 100;
+    return categories.map(() => even);
+  }
+  const amounts = categories.map((c) =>
+    Math.round(priceTotal * ((c.price_weight || 0) / totalWeight) * 100) / 100
+  );
+  const remainder = Math.round((priceTotal - amounts.reduce((s, a) => s + a, 0)) * 100) / 100;
+  amounts[amounts.length - 1] = Math.round((amounts[amounts.length - 1] + remainder) * 100) / 100;
+  return amounts;
 }

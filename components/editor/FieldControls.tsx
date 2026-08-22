@@ -179,6 +179,7 @@ export function TitledList({
 export interface Category {
   title: string;
   items: string[];
+  price_weight: number;
 }
 
 export function CategoryList({
@@ -199,7 +200,8 @@ export function CategoryList({
     onChange(categories.filter((_, idx) => idx !== i));
   }
   function add() {
-    onChange([...categories, { title: "", items: [""] }]);
+    const evenWeight = 1 / (categories.length + 1);
+    onChange([...categories, { title: "", items: [""], price_weight: evenWeight }]);
   }
   function updateItem(catIndex: number, itemIndex: number, value: string) {
     const cat = categories[catIndex];

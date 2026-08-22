@@ -114,63 +114,43 @@ export function ProposalEditor({ proposal: initial }: { proposal: Proposal }) {
 
           <section className="space-y-4">
             <h2 className="font-semibold text-dodo-ink">Cover</h2>
-            <Field label="Headline" value={c.headline} onChange={(v) => updateContent("headline", v)} />
-            <Field label="Subheadline" value={c.subheadline} onChange={(v) => updateContent("subheadline", v)} />
+            <Field label="Project title" value={c.project_title} onChange={(v) => updateContent("project_title", v)} />
+            <Field label="Footer tagline" value={c.footer_tagline} onChange={(v) => updateContent("footer_tagline", v)} />
             <StringList label="Service tags" items={c.service_tags} onChange={(v) => updateContent("service_tags", v)} />
           </section>
 
           <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">01 — The Opportunity</h2>
-            <TextAreaField label="Intro" value={c.opportunity_intro} onChange={(v) => updateContent("opportunity_intro", v)} />
-            <StringList label="Pain points" items={c.pain_points} onChange={(v) => updateContent("pain_points", v)} />
-            <TextAreaField label="Solution paragraph" value={c.solution_paragraph} onChange={(v) => updateContent("solution_paragraph", v)} />
+            <h2 className="font-semibold text-dodo-ink">Your Problem Areas</h2>
+            <TitledList label="Problem areas (4)" items={c.problem_areas} onChange={(v) => updateContent("problem_areas", v)} />
           </section>
 
           <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">02 — What We&apos;ll Help You Achieve</h2>
-            <TitledList label="Goals" items={c.goals} onChange={(v) => updateContent("goals", v)} />
+            <h2 className="font-semibold text-dodo-ink">Your Solution</h2>
+            <TitledList label="Solution benefits (4)" items={c.solution_benefits} onChange={(v) => updateContent("solution_benefits", v)} />
           </section>
 
           <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">03 — What We Do</h2>
-            <TitledList label="Services" items={c.services} onChange={(v) => updateContent("services", v)} />
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">04 — Package</h2>
+            <h2 className="font-semibold text-dodo-ink">Package</h2>
             <CategoryList label="Included categories" categories={c.package_categories} onChange={(v) => updateContent("package_categories", v)} />
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">05 — Why This Package</h2>
-            <TextAreaField label="Paragraph" value={c.why_package_paragraph} onChange={(v) => updateContent("why_package_paragraph", v)} />
-            <StringList label="Value flow" items={c.why_package_flow} onChange={(v) => updateContent("why_package_flow", v)} />
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">07 — What This Saves You</h2>
-            <StringList label="Friction points" items={c.savings_points} onChange={(v) => updateContent("savings_points", v)} />
-            <StringList label="Benefits (3)" items={c.savings_benefits} onChange={(v) => updateContent("savings_benefits", v)} />
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">08 — Our Process</h2>
-            <TitledList label="Steps" items={c.process_steps} onChange={(v) => updateContent("process_steps", v)} />
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">09 — What You Can Expect</h2>
-            <StringList label="Questions" items={c.expectation_questions} onChange={(v) => updateContent("expectation_questions", v)} />
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="font-semibold text-dodo-ink">10 — The Promise</h2>
-            <TextAreaField label="Paragraph" value={c.promise_paragraph} onChange={(v) => updateContent("promise_paragraph", v)} />
           </section>
 
           <section className="space-y-4">
             <h2 className="font-semibold text-dodo-ink">Closing</h2>
             <TextAreaField label="Thank-you message" value={c.closing_message} onChange={(v) => updateContent("closing_message", v)} />
+            <Field label="Contact email" value={c.contact_email} onChange={(v) => updateContent("contact_email", v)} />
+            <Field label="Contact phone / WhatsApp" value={c.contact_phone} onChange={(v) => updateContent("contact_phone", v)} />
+            <Field label="Website / portfolio" value={c.contact_website} onChange={(v) => updateContent("contact_website", v)} />
+          </section>
+
+          <section className="space-y-2 border-t border-dodo-border pt-6">
+            <h2 className="font-semibold text-dodo-ink">Standing company content</h2>
+            <p className="text-sm text-dodo-muted leading-relaxed">
+              &ldquo;What We Do&rdquo;, &ldquo;Why Us&rdquo;, &ldquo;Why That Matters&rdquo;, the
+              process steps, the promise, and the agreement summary are fixed Dodo Digital copy
+              shared by every proposal — edit them in{" "}
+              <code className="text-xs bg-dodo-cream px-1.5 py-0.5 rounded">lib/agency-content.ts</code>{" "}
+              to change them everywhere at once.
+            </p>
           </section>
         </div>
 

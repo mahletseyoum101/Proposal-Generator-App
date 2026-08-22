@@ -1,21 +1,24 @@
 import Image from "next/image";
-import type { Proposal } from "@/lib/types";
-import { amountDue } from "@/lib/types";
+import type { Proposal, TitledPoint } from "@/lib/types";
+import { amountDue, categoryAmounts } from "@/lib/types";
+import {
+  WHAT_WE_DO,
+  WHY_US,
+  WHY_THAT_MATTERS,
+  PROCESS_STEPS,
+  INVESTMENT_PARAGRAPH,
+  SAVINGS,
+  PROMISE,
+  agreementRows,
+  AGREEMENT_NOTE,
+} from "@/lib/agency-content";
 
-function SectionNumber({ n }: { n: string }) {
+function SectionHeading({ lead, rest }: { lead: string; rest: string }) {
   return (
-    <span className="inline-block text-sm font-semibold tracking-widest text-dodo-gold">
-      {n}
-    </span>
-  );
-}
-
-function SectionHeading({ n, title }: { n: string; title: string }) {
-  return (
-    <div className="mb-6 flex items-baseline gap-3">
-      <SectionNumber n={n} />
-      <h2 className="text-2xl sm:text-3xl font-semibold text-dodo-ink">{title}</h2>
-    </div>
+    <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
+      <span className="text-dodo-gold">{lead} </span>
+      <span className="text-dodo-ink">{rest}</span>
+    </h2>
   );
 }
 
@@ -38,6 +41,22 @@ function Section({
   );
 }
 
+function NumberedGrid({ items }: { items: TitledPoint[] }) {
+  return (
+    <div className="grid sm:grid-cols-2 gap-4">
+      {items.map((item, i) => (
+        <div key={i} className="bg-white border border-dodo-border rounded-xl p-5">
+          <span className="text-sm font-semibold text-dodo-gold">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <h3 className="font-semibold text-dodo-ink mt-1 mb-1">{item.title}</h3>
+          <p className="text-dodo-muted leading-relaxed text-sm">{item.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
   const c = proposal.content;
   const due = amountDue(proposal);
@@ -47,20 +66,23 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
     month: "long",
     day: "numeric",
   });
+  const amounts = categoryAmounts(proposal.price_total, c.package_categories);
+  const agreement = agreementRows(proposal.deposit_percent, proposal.revisions_rounds);
 
   return (
     <div className="bg-white text-dodo-body">
       {/* Cover */}
       <section className="px-6 sm:px-12 pt-20 pb-16 bg-dodo-cream border-b border-dodo-border text-center">
         <div className="max-w-3xl mx-auto flex flex-col items-center">
-          <Image src="/dodo-logo.png" alt="Dodo Digital" width={96} height={146} priority className="mb-8" />
+          <Image src="/dodo-logo.png" alt="Dodo Digital" width={80} height={122} priority className="mb-8" />
           <p className="text-sm font-semibold tracking-[0.2em] text-dodo-gold mb-4">
             CLIENT PROPOSAL
           </p>
-          <h1 className="text-3xl sm:text-5xl font-semibold text-dodo-ink leading-tight mb-4 text-balance">
-            {c.headline}
+          <h1 className="text-3xl sm:text-5xl font-semibold text-dodo-ink leading-tight mb-3 text-balance">
+            {proposal.business_name}
           </h1>
-          <p className="text-lg text-dodo-muted mb-8 max-w-xl text-balance">{c.subheadline}</p>
+          <p className="text-xl text-dodo-ink mb-2 text-balance">{c.project_title}</p>
+          <p className="text-lg text-dodo-muted mb-8 max-w-xl text-balance">{c.footer_tagline}</p>
           <div className="flex flex-wrap justify-center gap-2 mb-12">
             {c.service_tags.map((tag) => (
               <span
@@ -97,40 +119,34 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
         </div>
       </section>
 
-      {/* 01 Opportunity */}
+      {/* YOUR problem areas */}
       <Section>
-        <SectionHeading n="01" title="The Opportunity" />
-        <p className="text-lg leading-relaxed mb-6">{c.opportunity_intro}</p>
-        <p className="font-medium text-dodo-ink mb-3">Right now, you may be losing potential customers because:</p>
-        <ul className="space-y-2 mb-8">
-          {c.pain_points.map((point, i) => (
-            <li key={i} className="flex gap-3 leading-relaxed">
-              <span className="text-dodo-gold mt-1">&bull;</span>
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-lg leading-relaxed font-medium text-dodo-ink">{c.solution_paragraph}</p>
+        <SectionHeading lead="YOUR" rest="problem areas." />
+        <p className="leading-relaxed mb-8">
+          Systems are innately high-leverage. But that leverage can either work for you or against
+          you. In your case, there are a few small, persistent problems that are currently limiting
+          growth:
+        </p>
+        <NumberedGrid items={c.problem_areas} />
       </Section>
 
-      {/* 02 Achieve */}
+      {/* YOUR solution */}
       <Section tint>
-        <SectionHeading n="02" title="What We'll Help You Achieve" />
-        <div className="grid sm:grid-cols-2 gap-6">
-          {c.goals.map((goal, i) => (
-            <div key={i} className="bg-white border border-dodo-border rounded-xl p-6">
-              <h3 className="font-semibold text-dodo-ink mb-2">{goal.title}</h3>
-              <p className="text-dodo-muted leading-relaxed">{goal.description}</p>
-            </div>
-          ))}
-        </div>
+        <SectionHeading lead="YOUR" rest="solution." />
+        <p className="leading-relaxed mb-8">
+          Solving the above is straightforward; we&apos;ve done so many times before. In practice,
+          our solution is almost always a combination of content, design, and automation. Here&apos;s
+          what that looks like for you:
+        </p>
+        <NumberedGrid items={c.solution_benefits} />
       </Section>
 
-      {/* 03 Services */}
+      {/* WHAT we do */}
       <Section>
-        <SectionHeading n="03" title="What We Do" />
+        <SectionHeading lead="WHAT" rest="we do." />
+        <p className="leading-relaxed mb-8">{WHAT_WE_DO.intro}</p>
         <div className="space-y-6">
-          {c.services.map((service, i) => (
+          {WHAT_WE_DO.items.map((service, i) => (
             <div key={i} className="flex gap-5">
               <span className="text-2xl font-semibold text-dodo-gold w-12 shrink-0">
                 {String(i + 1).padStart(2, "0")}
@@ -144,9 +160,33 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
         </div>
       </Section>
 
-      {/* 04 Package */}
+      {/* WHY us */}
       <Section tint>
-        <SectionHeading n="04" title="Your Recommended Package" />
+        <SectionHeading lead="WHY" rest="us?" />
+        <p className="leading-relaxed mb-8">{WHY_US.intro}</p>
+        <NumberedGrid items={WHY_US.items} />
+      </Section>
+
+      {/* WHY that matters to you */}
+      <Section>
+        <SectionHeading lead="WHY" rest="that matters to you." />
+        <div className="space-y-5 mb-6">
+          {WHY_THAT_MATTERS.items.map((item, i) => (
+            <div key={i} className="flex gap-4">
+              <span className="text-dodo-gold font-semibold">{i + 1}</span>
+              <div>
+                <h3 className="font-semibold text-dodo-ink mb-1">{item.title}</h3>
+                <p className="text-dodo-muted leading-relaxed">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="font-medium text-dodo-ink">{WHY_THAT_MATTERS.closing}</p>
+      </Section>
+
+      {/* YOUR recommended package */}
+      <Section tint>
+        <SectionHeading lead="YOUR" rest="recommended package." />
         <div className="bg-white border border-dodo-gold rounded-2xl p-8">
           <p className="text-center text-xl font-semibold text-dodo-ink mb-8">
             {proposal.package_name}
@@ -170,31 +210,31 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
         </div>
       </Section>
 
-      {/* 05 Why this package */}
+      {/* WHAT working with us looks like */}
       <Section>
-        <SectionHeading n="05" title="Why This Package" />
-        <p className="leading-relaxed mb-6">
-          You don&apos;t need to invest in everything at once. This package focuses on the highest-impact areas first:
-        </p>
-        <div className="flex flex-wrap items-center gap-2 mb-8 font-semibold text-dodo-ink">
-          {c.why_package_flow.map((step, i) => (
-            <span key={i} className="flex items-center gap-2">
-              <span className="bg-dodo-cream border border-dodo-border rounded-full px-4 py-1.5">
-                {step}
-              </span>
-              {i < c.why_package_flow.length - 1 && <span className="text-dodo-gold">&rarr;</span>}
-            </span>
+        <SectionHeading lead="WHAT" rest="working with us looks like." />
+        <div className="grid sm:grid-cols-2 gap-5">
+          {PROCESS_STEPS.map((step, i) => (
+            <div key={i} className="border border-dodo-border rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-sm font-semibold text-dodo-gold">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-semibold text-dodo-ink">{step.title}</h3>
+              </div>
+              <p className="text-sm text-dodo-body leading-relaxed mb-3">{step.whatHappens}</p>
+              <p className="text-sm text-dodo-gold-dark leading-relaxed">
+                <span className="font-medium">Why it matters: </span>
+                {step.whyItMatters}
+              </p>
+            </div>
           ))}
         </div>
-        <p className="leading-relaxed">{c.why_package_paragraph}</p>
       </Section>
 
-      {/* 06 Investment */}
+      {/* WHAT you're investing */}
       <Section tint>
-        <SectionHeading n="06" title="The Investment" />
-        <p className="leading-relaxed mb-6">
-          Instead of purchasing each service separately, you&apos;re getting everything together as one streamlined package.
-        </p>
+        <SectionHeading lead="WHAT" rest="you're investing." />
         <div className="bg-white border border-dodo-border rounded-2xl overflow-hidden mb-6">
           {c.package_categories.map((cat, i) => (
             <div
@@ -202,17 +242,9 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
               className="flex justify-between px-6 py-3 border-b border-dodo-border last:border-b-0"
             >
               <span className="text-dodo-body">{cat.title}</span>
-              <span className="font-medium text-dodo-ink">Included</span>
+              <span className="font-medium text-dodo-ink">${amounts[i].toLocaleString()}</span>
             </div>
           ))}
-          <div className="flex justify-between px-6 py-3 border-b border-dodo-border">
-            <span className="text-dodo-body">Revisions</span>
-            <span className="font-medium text-dodo-ink">{proposal.revisions_rounds} rounds</span>
-          </div>
-          <div className="flex justify-between px-6 py-3 border-b border-dodo-border">
-            <span className="text-dodo-body">Delivery Timeline</span>
-            <span className="font-medium text-dodo-ink">{proposal.delivery_timeline}</span>
-          </div>
           <div className="flex justify-between px-6 py-4 bg-dodo-cream">
             <span className="font-semibold text-dodo-ink">Total Investment</span>
             <span className="font-semibold text-dodo-ink">
@@ -220,94 +252,54 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
             </span>
           </div>
         </div>
+        <p className="leading-relaxed mb-4">{INVESTMENT_PARAGRAPH}</p>
         {hasDeposit ? (
           <p className="text-dodo-muted">
-            A {proposal.deposit_percent}% deposit (${due.toLocaleString()}) secures your project start
-            date, with the balance due upon delivery.
+            A {proposal.deposit_percent}% deposit (${due.toLocaleString()}) secures your project
+            start date, with the balance due upon delivery.
           </p>
         ) : (
           <p className="text-dodo-muted">Full payment secures your project start date.</p>
         )}
       </Section>
 
-      {/* 07 Savings */}
+      {/* WHAT this saves you */}
       <Section>
-        <SectionHeading n="07" title="What This Saves You" />
-        <p className="leading-relaxed mb-3">
-          Hiring separate people for each of these services means:
-        </p>
+        <SectionHeading lead="WHAT" rest="this saves you." />
+        <p className="leading-relaxed mb-6">{SAVINGS.paragraph}</p>
         <ul className="space-y-2 mb-8">
-          {c.savings_points.map((point, i) => (
-            <li key={i} className="flex gap-3 leading-relaxed">
-              <span className="text-dodo-gold mt-1">&bull;</span>
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="leading-relaxed mb-4">
-          With Dodo Digital, one team handles your entire digital experience from start to finish.
-        </p>
-        <ul className="space-y-2">
-          {c.savings_benefits.map((benefit, i) => (
+          {SAVINGS.benefits.map((benefit, i) => (
             <li key={i} className="flex gap-3 font-medium text-dodo-ink">
               <span className="text-dodo-gold">&#10003;</span>
               <span>{benefit}</span>
             </li>
           ))}
         </ul>
-      </Section>
-
-      {/* 08 Process */}
-      <Section tint>
-        <SectionHeading n="08" title="Our Process" />
-        <div className="space-y-6">
-          {c.process_steps.map((step, i) => (
-            <div key={i} className="flex gap-5">
-              <span className="text-2xl font-semibold text-dodo-gold w-12 shrink-0">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <h3 className="font-semibold text-dodo-ink mb-1">{step.title}</h3>
-                <p className="text-dodo-muted leading-relaxed">{step.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* 09 Expectations */}
-      <Section>
-        <SectionHeading n="09" title="What You Can Expect" />
         <p className="mb-4">You won&apos;t have to wonder:</p>
         <ul className="space-y-2 mb-6">
-          {c.expectation_questions.map((q, i) => (
+          {SAVINGS.questions.map((q, i) => (
             <li key={i} className="italic text-dodo-muted">
-              &ldquo;{q.replace(/^["“]|["”]$/g, "")}&rdquo;
+              &ldquo;{q}&rdquo;
             </li>
           ))}
         </ul>
-        <p className="leading-relaxed">
-          We&apos;ll help turn those questions into a clear, professional digital presence that works
-          for you around the clock.
-        </p>
+        <p className="leading-relaxed">{SAVINGS.closing}</p>
       </Section>
 
-      {/* 10 Promise */}
+      {/* THE Dodo Digital promise */}
       <Section tint>
-        <SectionHeading n="10" title="The Dodo Digital Promise" />
-        <p className="leading-relaxed mb-4">{c.promise_paragraph}</p>
-        <p className="font-medium text-dodo-ink">
-          No unnecessary complexity. No confusing packages. No agency jargon. Just clear
-          deliverables and professional execution.
-        </p>
+        <SectionHeading lead="THE" rest="Dodo Digital promise." />
+        <p className="leading-relaxed mb-4">{PROMISE.paragraph}</p>
+        <p className="leading-relaxed mb-4">{PROMISE.guarantee}</p>
+        <p className="font-medium text-dodo-ink">{PROMISE.tagline}</p>
       </Section>
 
-      {/* 11 Ready to get started */}
+      {/* READY to get started */}
       <Section>
-        <SectionHeading n="11" title="Ready To Get Started?" />
+        <SectionHeading lead="READY" rest="to get started?" />
         <p className="leading-relaxed mb-8">
-          If you&apos;re ready to move forward, the next step is simple &mdash; sign below to lock in your
-          package and delivery timeline.
+          If you&apos;re ready to move forward, the next step is simple &mdash; sign below to lock
+          in your package and delivery timeline.
         </p>
         <div className="grid sm:grid-cols-3 gap-4">
           {[
@@ -324,6 +316,27 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
         </div>
       </Section>
 
+      {/* THE agreement, at a glance */}
+      <Section tint>
+        <SectionHeading lead="THE" rest="agreement, at a glance." />
+        <p className="leading-relaxed mb-6">
+          Here&apos;s a plain-language summary of how we&apos;ll work together. A complete Services
+          Agreement will be provided separately for signature before work begins.
+        </p>
+        <div className="bg-white border border-dodo-border rounded-2xl overflow-hidden mb-4">
+          {agreement.map((row, i) => (
+            <div
+              key={i}
+              className="flex flex-col sm:flex-row sm:gap-6 px-6 py-4 border-b border-dodo-border last:border-b-0"
+            >
+              <span className="font-semibold text-dodo-ink sm:w-40 shrink-0">{row.term}</span>
+              <span className="text-dodo-body text-sm leading-relaxed">{row.detail}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-sm text-dodo-muted">{AGREEMENT_NOTE}</p>
+      </Section>
+
       {/* Closing */}
       <section className="px-6 sm:px-12 py-16 bg-dodo-ink text-center">
         <div className="max-w-3xl mx-auto flex flex-col items-center">
@@ -331,8 +344,10 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
           <p className="text-xl text-white leading-relaxed mb-8 max-w-xl text-balance">
             {c.closing_message}
           </p>
-          <Image src="/dodo-logo.png" alt="Dodo Digital" width={56} height={85} className="mb-4 opacity-90" />
-          <p className="text-white/60 text-sm">dododigital.com</p>
+          <Image src="/dodo-logo.png" alt="Dodo Digital" width={48} height={73} className="mb-4 opacity-90" />
+          <p className="text-white/60 text-sm">
+            dododigital.com &bull; {c.contact_email} &bull; {c.contact_phone}
+          </p>
         </div>
       </section>
     </div>

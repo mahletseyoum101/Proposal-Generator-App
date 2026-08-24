@@ -1,5 +1,8 @@
 [build]
-  command = "npm run build"
+  # Netlify's edge-function bundler can't yet resolve Turbopack's middleware output
+  # (path-resolution bug when requiring ./chunks/[turbopack]_runtime.js), so force a
+  # webpack build here. Local dev/builds still use Turbopack via `npm run build`.
+  command = "npx next build --webpack"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

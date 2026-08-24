@@ -61,10 +61,14 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
   const c = proposal.content;
   const due = amountDue(proposal);
   const hasDeposit = proposal.deposit_percent > 0 && proposal.deposit_percent < 100;
+  // Pin an explicit timeZone so server (UTC on Netlify) and client (visitor's local
+  // timezone) always compute the same string — otherwise a date near a day boundary can
+  // format to a different calendar day between the two, causing a hydration mismatch.
   const formattedDate = new Date(proposal.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   });
   const amounts = categoryAmounts(proposal.price_total, c.package_categories);
   const agreement = agreementRows(proposal.deposit_percent, proposal.revisions_rounds);
@@ -242,20 +246,20 @@ export function ProposalTemplate({ proposal }: { proposal: Proposal }) {
               className="flex justify-between px-6 py-3 border-b border-dodo-border last:border-b-0"
             >
               <span className="text-dodo-body">{cat.title}</span>
-              <span className="font-medium text-dodo-ink">${amounts[i].toLocaleString()}</span>
+              <span className="font-medium text-dodo-ink">${amounts[i].toLocaleString("en-US")}</span>
             </div>
           ))}
           <div className="flex justify-between px-6 py-4 bg-dodo-cream">
             <span className="font-semibold text-dodo-ink">Total Investment</span>
             <span className="font-semibold text-dodo-ink">
-              ${proposal.price_total.toLocaleString()}
+              ${proposal.price_total.toLocaleString("en-US")}
             </span>
           </div>
         </div>
         <p className="leading-relaxed mb-4">{INVESTMENT_PARAGRAPH}</p>
         {hasDeposit ? (
           <p className="text-dodo-muted">
-            A {proposal.deposit_percent}% deposit (${due.toLocaleString()}) secures your project
+            A {proposal.deposit_percent}% deposit (${due.toLocaleString("en-US")}) secures your project
             start date, with the balance due upon delivery.
           </p>
         ) : (

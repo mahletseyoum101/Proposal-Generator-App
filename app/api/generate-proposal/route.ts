@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateProposalContent } from "@/lib/anthropic";
+import { generateProposalContent } from "@/lib/ai";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       briefText,
     });
   } catch (err) {
-    console.error("Opus 5 generation failed:", err);
+    console.error("AI generation failed:", err);
     return NextResponse.json({ error: "Failed to generate proposal content" }, { status: 502 });
   }
 

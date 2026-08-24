@@ -23,11 +23,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
+  // "checkout.session.completed" fires once checkout finishes, but for delayed payment
+  // methods (e.g. bank debits) the payment itself can still be pending at that point —
+  // Stripe confirms actual settlement via "async_payment_succeeded" instead. Only mark a
+  // proposal paid once we know the money actually cleared.
+  if (
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded"
+  ) {
     const session = event.data.object as Stripe.Checkout.Session;
     const proposalId = session.metadata?.proposal_id;
 
-    if (proposalId) {
+    if (proposalId && session.payment_status === "paid") {
       const supabase = createAdminClient();
 
       await supabase

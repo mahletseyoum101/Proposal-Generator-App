@@ -58,7 +58,7 @@ export default function NewProposalPage() {
       </Link>
       <h1 className="text-2xl font-semibold text-dodo-ink mt-2 mb-1">Create a new proposal</h1>
       <p className="text-dodo-muted mb-8">
-        Fill in the deal details and describe the project. Opus 5 will draft the full proposal —
+        Fill in the deal details and describe the project. AI will draft the full proposal —
         you&apos;ll review and edit before it goes live.
       </p>
 
@@ -164,7 +164,7 @@ export default function NewProposalPage() {
             Project brief <span className="text-dodo-muted font-normal">(1-2 paragraphs)</span>
           </label>
           <p className="text-sm text-dodo-muted mb-2">
-            Describe the client, their situation, and what you&apos;ll be doing for them. Opus 5
+            Describe the client, their situation, and what you&apos;ll be doing for them. AI
             uses this to write the whole proposal.
           </p>
           <textarea
@@ -184,7 +184,7 @@ export default function NewProposalPage() {
           disabled={loading}
           className="bg-dodo-ink text-white rounded-full px-6 py-3 font-medium hover:opacity-90 transition disabled:opacity-50"
         >
-          {loading ? "Drafting with Opus 5…" : "Generate proposal"}
+          {loading ? "Drafting with AI…" : "Generate proposal"}
         </button>
       </form>
     </div>

@@ -1,6 +1,6 @@
 /**
  * Fixed Dodo Digital company copy shared by every proposal. Only the sections that are
- * genuinely client-specific are drafted per-proposal by Opus 5 (see lib/anthropic.ts) —
+ * genuinely client-specific are drafted per-proposal by AI (see lib/ai.ts) —
  * everything here describes the agency itself and stays consistent across proposals.
  */
 

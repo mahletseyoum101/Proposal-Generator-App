@@ -9,6 +9,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
     return NextResponse.json({ error: "Signer name and signature are required" }, { status: 400 });
   }
 
+  const dataUrlMatch = /^data:image\/png;base64,(.+)$/.exec(signatureDataUrl);
+  if (!dataUrlMatch) {
+    return NextResponse.json({ error: "Invalid signature image" }, { status: 400 });
+  }
+  const base64 = dataUrlMatch[1];
+  // Reject anything absurdly large before decoding — a normal signature PNG is a few KB.
+  if (base64.length > 2_000_000) {
+    return NextResponse.json({ error: "Signature image is too large" }, { status: 413 });
+  }
+
   const supabase = createAdminClient();
 
   const { data: proposal, error: fetchError } = await supabase
@@ -25,8 +35,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
     return NextResponse.json({ error: "This proposal has already been signed" }, { status: 409 });
   }
 
-  const base64 = signatureDataUrl.split(",")[1];
   const bytes = Buffer.from(base64, "base64");
+  const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  if (!bytes.subarray(0, 8).equals(PNG_SIGNATURE)) {
+    return NextResponse.json({ error: "Invalid signature image" }, { status: 400 });
+  }
   const path = `${proposal.id}/${Date.now()}.png`;
 
   const { error: uploadError } = await supabase.storage
